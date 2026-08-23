@@ -396,7 +396,7 @@
                 const data = await response.json();
 
                 // LỖI MAPPING Ở ĐÂY ĐÃ ĐƯỢC SỬA: Bỏ "fields.", gọi trực tiếp
-                records = data.map(item => ({
+                records = data.value.map(item => ({
                     id: item.ID,
                     type: item.Title,
                     time: item.ThoiGian,
