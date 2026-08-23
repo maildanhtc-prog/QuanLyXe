@@ -322,10 +322,10 @@
                     <input type="text" inputmode="numeric" id="editAmount" oninput="formatMoneyInput(this)" required>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Đóng</button>
+                    <button type="button" class="btn-cancel" style="background: var(--danger);"onclick="deleteRecord()">Xóa Giao Dịch</button>
                     <button type="submit" class="btn-save">Cập Nhật</button>
                 </div>
-                <button type="button" class="btn-cancel" style="width: 100%; margin-top: 10px; background: var(--danger);" onclick="deleteRecord()">Xóa Giao Dịch</button>
+                <button type="button" class="btn-cancel" style="width: 100%; margin-top: 10px;" onclick="closeModal()">Đóng</button>
             </form>
         </div>
     </div>
