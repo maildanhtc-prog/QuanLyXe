@@ -361,7 +361,8 @@
         // Cấu hình API Power Automate
         const API_POST_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/24/workflows/014c7fbc1e9c46d99aa649c284cbbebf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=JcARu2EUWjXBUNRPYwm8oPoPVUsOh3Bjp7IH8pJyWrs";
         const API_GET_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/b1b2fd65d46846b184449b17833ffb1a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oD3Ru3WF-Rsava3aRBENTbi-srnyV0O6HSyLfO2AzwQ";
-
+        const API_UPDATE_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/9789563226194945af949f6311871d2c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ULsHGGeQylQb6n1BoePjIi4uBLOyhyc1DplrE77Ap-Y";
+        const API_DELETE_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/168680ef02494037b435a5053f48de60/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Q0cyjHCtHdYojOBWUAPS04z1XwoZrHFBewQXOxbfQH0";
         // Mảng dữ liệu toàn cục
         let records = [];
 
@@ -588,15 +589,71 @@
             document.getElementById('editModal').style.display = "none";
         }
 
+        // Lưu dữ liệu chỉnh sửa lên SharePoint
         function saveEdit(event) {
             event.preventDefault();
-            alert("Tính năng cập nhật trực tiếp lên SharePoint đang được phát triển.");
-            closeModal();
+            let submitBtn = event.target.querySelector('.btn-save');
+            submitBtn.innerText = "Đang lưu...";
+            submitBtn.disabled = true;
+
+            let index = parseInt(document.getElementById('editIndex').value);
+            let targetRecord = records[index]; // Lấy bản ghi hiện tại để lấy ID Sharepoint
+
+            let updatedData = {
+                id: targetRecord.id, // ID của dòng trên SharePoint
+                type: targetRecord.type, // Loại giao dịch giữ nguyên
+                time: document.getElementById('editTime').value,
+                details: document.getElementById('editDetails').value,
+                licensePlate: document.getElementById('editLicensePlate').value,
+                amount: parseFloat(document.getElementById('editAmount').value)
+            };
+
+            fetch(API_UPDATE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => {
+                alert("Đã cập nhật thành công!");
+                closeModal();
+                fetchRecords(); // Tải lại dữ liệu mới nhất từ máy chủ
+            })
+            .catch(error => {
+                alert("Lỗi kết nối khi cập nhật!");
+            })
+            .finally(() => {
+                submitBtn.innerText = "Cập Nhật";
+                submitBtn.disabled = false;
+            });
         }
 
+        // Xóa giao dịch trên SharePoint
         function deleteRecord() {
-            if (confirm("Tính năng xóa trực tiếp trên SharePoint đang được phát triển. Anh có muốn đóng cửa sổ không?")) {
-                closeModal();
+            if (confirm("Anh có chắc chắn muốn xóa giao dịch này vĩnh viễn khỏi hệ thống không?")) {
+                let btnCancel = document.querySelector('button[onclick="deleteRecord()"]');
+                btnCancel.innerText = "Đang xóa...";
+                btnCancel.disabled = true;
+
+                let index = parseInt(document.getElementById('editIndex').value);
+                let recordId = records[index].id;
+
+                fetch(API_DELETE_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: recordId })
+                })
+                .then(response => {
+                    alert("Đã xóa thành công!");
+                    closeModal();
+                    fetchRecords(); // Làm mới lại bảng
+                })
+                .catch(error => {
+                    alert("Lỗi kết nối khi xóa!");
+                })
+                .finally(() => {
+                    btnCancel.innerText = "Xóa Giao Dịch";
+                    btnCancel.disabled = false;
+                });
             }
         }
     </script>
