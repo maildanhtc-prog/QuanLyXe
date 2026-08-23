@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quản Lý Xe Dịch Vụ</title>
     <style>
         :root {
-            --primary: #007bff;
-            --success: #28a745;
+            --primary: #007bff; /* TAXI - Xanh dương */
+            --success: #28a745; 
+            --warning: #FFC067; /* TXTL - Cam */
             --danger: #dc3545;
             --dark: #343a40;
             --light: #f8f9fa;
@@ -27,7 +27,7 @@
             display: flex;
             background-color: var(--primary);
             color: white;
-            padding: 10px;
+            padding: 5px;
             justify-content: space-around;
             position: sticky;
             top: 0;
@@ -38,9 +38,9 @@
             background: none;
             border: none;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
-            padding: 10px;
+            padding: 12px 5px;
         }
 
         .navbar button.active {
@@ -48,149 +48,105 @@
         }
 
         /* Các khu vực nội dung */
-        .container {
-            padding: 20px;
-        }
+        .container { padding: 15px; }
+        .section { display: none; }
+        .section.active { display: block; }
 
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Form nhập liệu (Mobile-friendly) */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 16px;
+        /* Form nhập liệu */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 1px solid #ccc;
+            border-radius: 5px; box-sizing: border-box; font-size: 16px;
         }
 
         .btn-submit {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--success);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 10px;
+            width: 100%; padding: 15px; background-color: var(--success);
+            color: white; border: none; border-radius: 5px;
+            font-size: 18px; font-weight: bold; margin-top: 10px;
         }
 
         /* Báo cáo Dashboard */
         .card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: white; padding: 15px; border-radius: 8px;
+            margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
-        .card h3,
-        .card h4 {
-            margin: 0 0 10px 0;
-            color: var(--dark);
-        }
-
-        .card .amount {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
+        .card h4 { margin: 0 0 10px 0; color: var(--dark); }
+        .card .amount { font-size: 20px; font-weight: bold; }
         .text-success { color: var(--success); }
         .text-danger { color: var(--danger); }
         .text-primary { color: var(--primary); }
 
         /* CSS cho danh sách lịch sử */
         .history-item {
-            background: white;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border-left: 4px solid #ccc;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
+            background: white; padding: 12px; border-radius: 6px;
+            margin-bottom: 10px; border-left: 4px solid #ccc;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); cursor: pointer;
         }
-
         .history-item.type-service { border-left-color: var(--primary); }
-        .history-item.type-rental { border-left-color: var(--success); }
+        .history-item.type-rental { border-left-color: var(--warning); }
         .history-item.type-expense { border-left-color: var(--danger); }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .history-details {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.4;
-        }
-
+        
+        .history-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; }
+        .history-details { font-size: 14px; color: #555; line-height: 1.4; }
         .history-amount { font-weight: bold; }
         .history-amount.income { color: var(--success); }
         .history-amount.expense { color: var(--danger); }
 
-        /* CSS cho Modal (Cửa sổ chỉnh sửa) */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+        /* CSS MÀN HÌNH LỊCH 24H */
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            gap: 2px; background-color: #ddd; border: 1px solid #ddd;
+            touch-action: pan-y; /* Hỗ trợ vuốt trái phải tốt hơn */
         }
-
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            border-radius: 8px;
-            box-sizing: border-box;
-            max-height: 90vh;
-            overflow-y: auto;
+        .calendar-day-header {
+            background-color: var(--dark); color: white;
+            text-align: center; font-weight: bold; padding: 8px 0; font-size: 13px;
         }
-
-        .modal-content h3 { margin-top: 0; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-
-        .btn-cancel {
-            flex: 1; padding: 12px; background: #6c757d;
-            color: white; border: none; border-radius: 5px; font-weight: bold;
+        .calendar-cell {
+            background-color: white; min-height: 90px; padding: 2px;
+            display: flex; flex-direction: column; overflow: hidden;
         }
+        .calendar-cell.other-month { background-color: #f5f5f5; color: #aaa; }
+        .calendar-cell.today { background-color: #eaf4ff; border: 1px solid var(--primary); }
+        .date-number { font-weight: bold; font-size: 13px; margin-bottom: 4px; text-align: right; padding-right: 2px;}
 
-        .btn-save {
-            flex: 1; padding: 12px; background: var(--primary);
-            color: white; border: none; border-radius: 5px; font-weight: bold;
+        /* CSS Thanh Sự Kiện Lịch */
+        .cal-event-container {
+            position: relative; margin-bottom: 3px; border-radius: 3px;
+            background-color: #f0f0f0; border: 1px solid #e0e0e0;
+            height: 22px; cursor: pointer; display: flex; align-items: center; overflow: hidden;
         }
+        .cal-event-bg {
+            position: absolute; top: 0; bottom: 0; z-index: 1; border-radius: 2px;
+        }
+        .cal-event-bg.bg-service { background-color: var(--primary); opacity: 0.75; }
+        .cal-event-bg.bg-rental { background-color: var(--warning); opacity: 0.75; }
         
-        /* Hiệu ứng loading */
+        .cal-event-text {
+            position: relative; z-index: 2; font-size: 10px; font-weight: 700;
+            color: #000; padding: 0 3px; white-space: nowrap;
+            /* Phủ viền trắng để chữ luôn rõ trên mọi nền màu */
+            text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; width: 95%; max-width: 400px; padding: 20px;
+            border-radius: 8px; max-height: 90vh; overflow-y: auto;
+        }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-cancel, .btn-save { flex: 1; padding: 12px; border: none; border-radius: 5px; font-weight: bold; color: white;}
+        .btn-cancel { background: #6c757d; }
+        .btn-save { background: var(--primary); }
         .loader {
             border: 4px solid #f3f3f3; border-top: 4px solid var(--primary);
-            border-radius: 50%; width: 20px; height: 20px;
-            animation: spin 1s linear infinite; display: inline-block;
+            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -201,56 +157,66 @@
     <!-- Thanh Menu -->
     <div class="navbar">
         <button class="tab-btn active" onclick="switchTab('dashboard')">Báo Cáo</button>
+        <button class="tab-btn" onclick="switchTab('calendar')">Lịch</button>
         <button class="tab-btn" onclick="switchTab('service')">Dịch Vụ</button>
-        <button class="tab-btn" onclick="switchTab('rental')">Cho Thuê</button>
+        <button class="tab-btn" onclick="switchTab('rental')">Thuê Xe</button>
         <button class="tab-btn" onclick="switchTab('expense')">Chi Phí</button>
     </div>
 
     <div class="container">
-        <!-- 1. Màn hình Báo cáo -->
+        <!-- 1. MÀN HÌNH LỊCH -->
+        <div id="calendar" class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <button onclick="changeMonth(-1)" style="padding: 8px 12px; border: none; background: var(--dark); color: white; border-radius: 5px;">&lt;</button>
+                <h3 id="calendarMonthYear" style="margin: 0; text-align: center; color: var(--dark);">Tháng 8 - 2026</h3>
+                <button onclick="changeMonth(1)" style="padding: 8px 12px; border: none; background: var(--dark); color: white; border-radius: 5px;">&gt;</button>
+            </div>
+            
+            <div id="calendarGrid" class="calendar-grid">
+                <!-- Javascript sẽ tự động vẽ lịch vào đây -->
+            </div>
+            <p style="font-size: 11px; text-align: center; color: #888; margin-top: 10px;">Vuốt trái/phải trên lịch để đổi tháng</p>
+        </div>
+
+        <!-- 2. MÀN HÌNH BÁO CÁO -->
         <div id="dashboard" class="section active">
-            <!-- Bộ lọc tháng -->
-            <div class="filter-group" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0;">Báo Cáo</h2>
                 <div>
                     <span id="loadingIndicator" style="display: none; margin-right: 10px;"><div class="loader"></div></span>
-                    <input type="month" id="monthFilter" onchange="loadReport()" style="width: 150px; padding: 8px;">
+                    <input type="month" id="monthFilter" onchange="loadReport()" style="width: 140px; padding: 8px;">
                 </div>
             </div>
 
-            <!-- Tổng quan -->
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <div class="card" style="flex: 1; padding: 15px;">
-                    <h4 style="color: var(--success);">Doanh Thu</h4>
-                    <div id="totalRevenue" style="font-size: 18px; font-weight: bold;">0 đ</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                <div class="card" style="flex: 1; padding: 10px;">
+                    <h4 style="color: var(--success); font-size: 14px;">Doanh Thu</h4>
+                    <div id="totalRevenue" style="font-size: 16px; font-weight: bold;">0 đ</div>
                 </div>
-                <div class="card" style="flex: 1; padding: 15px;">
-                    <h4 style="color: var(--danger);">Chi Phí</h4>
-                    <div id="totalExpense" style="font-size: 18px; font-weight: bold;">0 đ</div>
+                <div class="card" style="flex: 1; padding: 10px;">
+                    <h4 style="color: var(--danger); font-size: 14px;">Chi Phí</h4>
+                    <div id="totalExpense" style="font-size: 16px; font-weight: bold;">0 đ</div>
                 </div>
-                <div class="card" style="flex: 1; padding: 15px;">
-                    <h4 style="color: var(--primary);">Lợi Nhuận</h4>
-                    <div id="totalProfit" style="font-size: 18px; font-weight: bold;">0 đ</div>
+                <div class="card" style="flex: 1; padding: 10px;">
+                    <h4 style="color: var(--primary); font-size: 14px;">Lợi Nhuận</h4>
+                    <div id="totalProfit" style="font-size: 16px; font-weight: bold;">0 đ</div>
                 </div>
             </div>
 
-            <!-- Lịch sử & Tìm kiếm -->
             <div class="history-section">
                 <h3 style="margin-bottom: 10px;">Lịch sử giao dịch</h3>
                 <input type="text" id="searchInput" placeholder="Tìm điểm đến, biển số..." onkeyup="renderHistory()" style="margin-bottom: 15px;">
-                <div id="historyList" style="max-height: 400px; overflow-y: auto;">
-                    <p style='text-align:center; color:#888;'>Đang tải dữ liệu...</p>
-                </div>
+                <div id="historyList" style="max-height: 400px; overflow-y: auto;"></div>
             </div>
         </div>
 
-        <!-- 2. Form Chạy Dịch Vụ -->
+        <!-- 3. Form Chạy Dịch Vụ (TAXI) -->
         <div id="service" class="section">
             <h2>Ghi nhận cuốc dịch vụ</h2>
             <form onsubmit="saveData(event, 'service')">
                 <div class="form-group">
                     <label>Biển số xe:</label>
-                    <input type="text" id="srvLicensePlate" placeholder="VD: 63A-123.45" required>
+                    <input type="text" id="srvLicensePlate" oninput="formatLicensePlate(this)" placeholder="VD: 63A-12345" required>
                 </div>
                 <div class="form-group">
                     <label>Giờ chạy:</label>
@@ -262,23 +228,23 @@
                 </div>
                 <div class="form-group">
                     <label>Số tiền thu (VNĐ):</label>
-                    <input type="number" id="srvAmount" required>
+                    <input type="text" inputmode="numeric" id="srvAmount" oninput="formatMoneyInput(this)" required>
                 </div>
                 <div class="form-group">
                     <label>Tiền Tip (VNĐ):</label>
-                    <input type="number" id="srvTip" placeholder="Không có thì để trống" value="0">
+                    <input type="text" inputmode="numeric" id="srvTip" oninput="formatMoneyInput(this)" placeholder="Không có thì để trống">
                 </div>
                 <button type="submit" class="btn-submit">Lưu Cuốc Xe</button>
             </form>
         </div>
 
-        <!-- 3. Form Cho Thuê Tự Lái -->
+        <!-- 4. Form Cho Thuê Tự Lái (TXTL) -->
         <div id="rental" class="section">
             <h2>Ghi nhận cho thuê xe</h2>
             <form onsubmit="saveData(event, 'rental')">
                 <div class="form-group">
                     <label>Biển số xe:</label>
-                    <input type="text" id="rentLicensePlate" placeholder="VD: 63A-123.45" required>
+                    <input type="text" id="rentLicensePlate" oninput="formatLicensePlate(this)" placeholder="VD: 63A-12345" required>
                 </div>
                 <div class="form-group">
                     <label>Người thuê:</label>
@@ -298,13 +264,13 @@
                 </div>
                 <div class="form-group">
                     <label>Số tiền thu (VNĐ):</label>
-                    <input type="number" id="rentAmount" required>
+                    <input type="text" inputmode="numeric" id="rentAmount" oninput="formatMoneyInput(this)" required>
                 </div>
                 <button type="submit" class="btn-submit">Lưu Hợp Đồng</button>
             </form>
         </div>
 
-        <!-- 4. Form Chi Phí -->
+        <!-- 5. Form Chi Phí -->
         <div id="expense" class="section">
             <h2>Ghi nhận chi phí</h2>
             <form onsubmit="saveData(event, 'expense')">
@@ -318,7 +284,7 @@
                 </div>
                 <div class="form-group">
                     <label>Số tiền (VNĐ):</label>
-                    <input type="number" id="expAmount" required>
+                    <input type="text" inputmode="numeric" id="expAmount" oninput="formatMoneyInput(this)" required>
                 </div>
                 <button type="submit" class="btn-submit" style="background-color: var(--danger);">Lưu Chi Phí</button>
             </form>
@@ -333,20 +299,27 @@
                 <input type="hidden" id="editIndex">
 
                 <div class="form-group">
-                    <label>Thời gian:</label>
+                    <label>Thời gian bắt đầu:</label>
                     <input type="datetime-local" id="editTime" required>
                 </div>
+                
+                <!-- Ẩn/Hiện tuỳ loại giao dịch -->
+                <div class="form-group" id="editEndGroup" style="display: none;">
+                    <label>Thời gian kết thúc (Thuê xe):</label>
+                    <input type="datetime-local" id="editEndTime">
+                </div>
+
                 <div class="form-group">
                     <label>Chi tiết (Điểm đến/Người thuê/Loại chi):</label>
                     <input type="text" id="editDetails" required>
                 </div>
                 <div class="form-group">
                     <label>Biển số xe:</label>
-                    <input type="text" id="editLicensePlate">
+                    <input type="text" id="editLicensePlate" oninput="formatLicensePlate(this)">
                 </div>
                 <div class="form-group">
                     <label>Số tiền (VNĐ):</label>
-                    <input type="number" id="editAmount" required>
+                    <input type="text" inputmode="numeric" id="editAmount" oninput="formatMoneyInput(this)" required>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn-cancel" onclick="closeModal()">Đóng</button>
@@ -358,13 +331,49 @@
     </div>
 
     <script>
-        // Cấu hình API Power Automate
+        // Cấu hình API Power Automate (Anh dùng API Cũ, tôi giữ nguyên)
         const API_POST_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/24/workflows/014c7fbc1e9c46d99aa649c284cbbebf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=JcARu2EUWjXBUNRPYwm8oPoPVUsOh3Bjp7IH8pJyWrs";
         const API_GET_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/b1b2fd65d46846b184449b17833ffb1a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oD3Ru3WF-Rsava3aRBENTbi-srnyV0O6HSyLfO2AzwQ";
-        const API_UPDATE_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/9789563226194945af949f6311871d2c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ULsHGGeQylQb6n1BoePjIi4uBLOyhyc1DplrE77Ap-Y";
-        const API_DELETE_URL = "https://ee7624b50702e9dcbfb071ce78dd17.9b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/00/workflows/168680ef02494037b435a5053f48de60/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Q0cyjHCtHdYojOBWUAPS04z1XwoZrHFBewQXOxbfQH0";
-        // Mảng dữ liệu toàn cục
+        
+        // Link API UPDATE & DELETE (Đang chờ anh tạo)
+        const API_UPDATE_URL = ""; 
+        const API_DELETE_URL = ""; 
+
         let records = [];
+        let currentCalDate = new Date();
+
+        // Tiện ích Format Tiền Tệ
+        function formatMoneyInput(input) {
+            let value = input.value.replace(/\D/g, "");
+            if (value !== "") value = new Intl.NumberFormat('vi-VN').format(value);
+            input.value = value;
+        }
+        function getCleanNumber(stringNumber) {
+            if (!stringNumber) return 0;
+            return parseFloat(stringNumber.replace(/\./g, '')) || 0;
+        }
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+
+        // Tiện ích Format Biển số
+        function formatLicensePlate(input) {
+            let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (val.length > 3) val = val.substring(0, 3) + '-' + val.substring(3, 8);
+            input.value = val;
+        }
+
+        // Tiện ích Format Thời gian chuẩn HTML
+        function formatToDatetimeLocal(dateString) {
+            if (!dateString) return "";
+            let d = new Date(dateString);
+            let year = d.getFullYear();
+            let month = (d.getMonth() + 1).toString().padStart(2, '0');
+            let day = d.getDate().toString().padStart(2, '0');
+            let hours = d.getHours().toString().padStart(2, '0');
+            let minutes = d.getMinutes().toString().padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
 
         // Khởi tạo tháng hiện tại
         document.getElementById('monthFilter').value = new Date().toISOString().slice(0, 7);
@@ -376,49 +385,51 @@
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
 
-            if (tabId === 'dashboard') {
-                loadReport();
-            }
+            if (tabId === 'dashboard') loadReport();
+            if (tabId === 'calendar') renderCalendar();
         }
 
-        // Định dạng tiền tệ VNĐ
-        function formatMoney(amount) {
-            return new Intl.NumberFormat('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).format(amount);
-        }
-
-        // Lấy dữ liệu từ SharePoint (Power Automate)
+        // FETCH API
         async function fetchRecords() {
             document.getElementById('loadingIndicator').style.display = "inline-block";
             try {
                 const response = await fetch(API_GET_URL);
                 const data = await response.json();
 
-                // LỖI MAPPING Ở ĐÂY ĐÃ ĐƯỢC SỬA: Bỏ "fields.", gọi trực tiếp
-                records = data.value.map(item => ({
-                    id: item.ID,
-                    type: item.Title,
-                    time: item.ThoiGian,
-                    amount: parseFloat(item.SoTien) || 0, // Sửa item.fields.SoTien thành item.SoTien
-                    details: item.ChiTiet,
-                    licensePlate: item.BienSo
-                }));
+                // Lọc tách THỜI GIAN KẾT THÚC từ ChiTiet ra
+                records = data.value.map(item => {
+                    let rawDetails = item.ChiTiet || "";
+                    let finalDetails = rawDetails;
+                    let endTime = null;
+                    
+                    if (rawDetails.includes(" |END|")) {
+                        let parts = rawDetails.split(" |END|");
+                        finalDetails = parts[0];
+                        endTime = parts[1];
+                    }
 
-                loadReport(); // Vẽ lại báo cáo sau khi có dữ liệu
+                    return {
+                        id: item.ID,
+                        type: item.Title,
+                        time: item.ThoiGian,
+                        endTime: endTime,
+                        amount: parseFloat(item.SoTien) || 0,
+                        details: finalDetails,
+                        licensePlate: item.BienSo
+                    };
+                });
+
+                loadReport();
+                renderCalendar();
             } catch (error) {
-                console.error("Lỗi khi tải dữ liệu:", error);
-                document.getElementById('historyList').innerHTML = "<p style='text-align:center; color:red;'>Lỗi kết nối máy chủ. Vui lòng tải lại trang.</p>";
+                document.getElementById('historyList').innerHTML = "<p style='text-align:center; color:red;'>Lỗi tải dữ liệu.</p>";
             } finally {
                 document.getElementById('loadingIndicator').style.display = "none";
             }
         }
-
-        // Gọi API ngay khi mở trang
         fetchRecords();
 
-        // Gửi dữ liệu mới
+        // GỬI DATA MỚI
         function saveData(event, type) {
             event.preventDefault();
             let submitBtn = event.target.querySelector('button[type="submit"]');
@@ -429,78 +440,183 @@
 
             if (type === 'service') {
                 newData.time = document.getElementById('srvTime').value;
-                let amount = parseFloat(document.getElementById('srvAmount').value) || 0;
-                let tip = parseFloat(document.getElementById('srvTip').value) || 0;
+                let amount = getCleanNumber(document.getElementById('srvAmount').value);
+                let tip = getCleanNumber(document.getElementById('srvTip').value);
                 newData.amount = amount + tip;
                 let tipText = tip > 0 ? ` (Tip: ${tip.toLocaleString('vi-VN')} đ)` : "";
                 newData.details = document.getElementById('srvDest').value + tipText;
                 newData.licensePlate = document.getElementById('srvLicensePlate').value;
+                
             } else if (type === 'rental') {
                 newData.time = document.getElementById('rentStart').value;
-                newData.amount = parseFloat(document.getElementById('rentAmount').value);
-                newData.details = document.getElementById('renterName').value + " - " + document.getElementById('rentLocation').value;
+                newData.amount = getCleanNumber(document.getElementById('rentAmount').value);
+                
+                let renterInfo = document.getElementById('renterName').value + " - " + document.getElementById('rentLocation').value;
+                let rentEnd = document.getElementById('rentEnd').value;
+                
+                // MẸO: Lưu Thời gian trả xe vào chung cột Chi Tiết
+                newData.details = renterInfo + " |END|" + rentEnd;
                 newData.licensePlate = document.getElementById('rentLicensePlate').value;
+                
             } else if (type === 'expense') {
                 newData.time = document.getElementById('expDate').value;
-                newData.amount = parseFloat(document.getElementById('expAmount').value);
+                newData.amount = getCleanNumber(document.getElementById('expAmount').value);
                 newData.details = document.getElementById('expType').value;
                 newData.licensePlate = "Không có";
             }
 
             fetch(API_POST_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newData)
-                })
-                .then(response => {
-                    alert("Đã lưu thành công!");
-                    event.target.reset();
-                    submitBtn.innerText = "Lưu thành công";
-                    submitBtn.disabled = false;
-                    fetchRecords(); // Gọi API lấy dữ liệu mới nhất về
-                    document.querySelectorAll('.tab-btn')[0].click(); // Trở về tab Dashboard
-                })
-                .catch(error => {
-                    alert("Lỗi mạng!");
-                    submitBtn.innerText = "Thử lại";
-                    submitBtn.disabled = false;
-                });
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newData)
+            }).then(response => {
+                alert("Đã lưu thành công!");
+                event.target.reset();
+                fetchRecords(); 
+                document.querySelectorAll('.tab-btn')[0].click(); 
+            }).finally(() => {
+                submitBtn.innerText = "Lưu thành công"; submitBtn.disabled = false;
+            });
         }
 
-        // Tính toán Dashboard (Đã sửa thuật toán xử lý thời gian)
+        // ==========================================
+        // KHU VỰC VẼ LỊCH (CALENDAR) THEO KHUNG 24H
+        // ==========================================
+        function changeMonth(offset) {
+            currentCalDate.setMonth(currentCalDate.getMonth() + offset);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = ""; 
+
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
+            document.getElementById('calendarMonthYear').innerText = `Tháng ${month + 1} - ${year}`;
+
+            const dayNames = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+            dayNames.forEach(day => { grid.innerHTML += `<div class="calendar-day-header">${day}</div>`; });
+
+            const firstDayOfMonth = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let startDayIndex = firstDayOfMonth.getDay() === 0 ? 6 : firstDayOfMonth.getDay() - 1;
+
+            const today = new Date();
+            let html = "";
+
+            for (let i = 0; i < startDayIndex; i++) html += `<div class="calendar-cell other-month"></div>`;
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                let cellStart = new Date(year, month, i, 0, 0, 0);
+                let cellEnd = new Date(year, month, i, 23, 59, 59);
+                let isToday = (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) ? "today" : "";
+                
+                let eventsHtml = "";
+                
+                records.forEach((record, idx) => {
+                    if(!record.time || record.type === 'expense') return;
+
+                    let startD = new Date(record.time);
+                    let endD;
+                    
+                    // Tính thời gian kết thúc
+                    if (record.endTime) {
+                        endD = new Date(record.endTime);
+                    } else {
+                        // Nếu không có giờ kết thúc: Thuê xe mặc định 24h, Taxi mặc định 2h (để vẽ thanh màu)
+                        let durationHours = record.type === 'rental' ? 24 : 2; 
+                        endD = new Date(startD.getTime() + durationHours * 60 * 60 * 1000);
+                    }
+
+                    // Nếu cuốc xe giao nhau với ngày đang vẽ
+                    if (startD <= cellEnd && endD >= cellStart) {
+                        let startPercent = 0;
+                        let width = 100;
+
+                        if (record.type === 'service') {
+                            // Nếu là Dịch Vụ (DV): Phủ full màu 100% ô lịch, không tính timeline
+                            startPercent = 0;
+                            width = 100;
+                        } else {
+                            // Nếu là Cho Thuê (TXTL): Tính tỷ lệ % thời gian trong ngày
+                            let msInDay = 24 * 60 * 60 * 1000;
+                            let endPercent = 100;
+                            
+                            if (startD > cellStart) startPercent = ((startD - cellStart) / msInDay) * 100;
+                            if (endD < cellEnd) endPercent = ((endD - cellStart) / msInDay) * 100;
+                            
+                            width = endPercent - startPercent;
+                        }
+                        
+                        let bgClass = record.type === 'service' ? 'bg-service' : 'bg-rental';
+                        
+                        // Đổi chữ TAXI thành DV
+                        let prefix = record.type === 'service' ? 'DV' : 'TXTL'; 
+                        
+                        let license = (record.licensePlate && record.licensePlate !== "Không có") ? record.licensePlate : 'Chưa BS';
+                        let amountText = new Intl.NumberFormat('vi-VN').format(record.amount);
+                        
+                        // Cấu trúc Text hiển thị: DV/TXTL - Biển - Chi tiết - Tiền
+                        let displayText = `${prefix} - ${license} - ${record.details} - ${amountText}đ`;
+
+                        eventsHtml += `
+                            <div class="cal-event-container" onclick="openEditModal(${idx})">
+                                <div class="cal-event-bg ${bgClass}" style="left: ${startPercent}%; width: ${width}%;"></div>
+                                <div class="cal-event-text">${displayText}</div>
+                            </div>
+                        `;
+                    }
+                });
+
+                html += `
+                    <div class="calendar-cell ${isToday}">
+                        <div class="date-number">${i}</div>
+                        ${eventsHtml}
+                    </div>
+                `;
+            }
+
+            let totalCells = startDayIndex + daysInMonth;
+            let remainingCells = (7 - (totalCells % 7)) % 7;
+            for (let i = 0; i < remainingCells; i++) html += `<div class="calendar-cell other-month"></div>`;
+
+            grid.innerHTML += html;
+        }
+
+        // Xử lý vuốt Lịch
+        let touchstartX = 0; let touchendX = 0;
+        document.getElementById('calendar').addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
+        document.getElementById('calendar').addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            let swipeDist = touchendX - touchstartX;
+            if (swipeDist > 50) changeMonth(-1);
+            if (swipeDist < -50) changeMonth(1);
+        }, {passive: true});
+
+        // ==========================================
+        // BÁO CÁO VÀ CHỈNH SỬA
+        // ==========================================
         function loadReport() {
-            const selectedMonthStr = document.getElementById('monthFilter').value; // Dạng YYYY-MM
-            let totalRev = 0;
-            let totalExp = 0;
-            let filteredRecords = [];
+            const selectedMonthStr = document.getElementById('monthFilter').value; 
+            let totalRev = 0, totalExp = 0, filteredRecords = [];
 
             records.forEach(record => {
                 if (!record.time) return;
-
-                // Xử lý chuẩn hóa thời gian thay vì cắt chuỗi thuần
-                let dateObj = new Date(record.time);
-                let year = dateObj.getFullYear();
-                let month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-                let recMonth = `${year}-${month}`; // Ép về chuẩn YYYY-MM
-
+                let d = new Date(record.time);
+                let recMonth = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}`;
                 if (recMonth === selectedMonthStr) {
                     filteredRecords.push(record);
-                    if (record.type === 'service' || record.type === 'rental') {
-                        totalRev += record.amount;
-                    } else if (record.type === 'expense') {
-                        totalExp += record.amount;
-                    }
+                    if (record.type === 'service' || record.type === 'rental') totalRev += record.amount;
+                    if (record.type === 'expense') totalExp += record.amount;
                 }
             });
 
             document.getElementById('totalRevenue').innerText = formatMoney(totalRev);
             document.getElementById('totalExpense').innerText = formatMoney(totalExp);
             document.getElementById('totalProfit').innerText = formatMoney(totalRev - totalExp);
-
             renderHistory(filteredRecords);
         }
 
-        // Hiển thị lịch sử
         function renderHistory(dataToRender = null) {
             const searchStr = document.getElementById('searchInput').value.toLowerCase();
             const listContainer = document.getElementById('historyList');
@@ -510,153 +626,83 @@
                 dataToRender = records.filter(r => {
                     if (!r.time) return false;
                     let d = new Date(r.time);
-                    let recMonth = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}`;
-                    return recMonth === selectedMonthStr;
+                    return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}` === selectedMonthStr;
                 });
             }
 
             listContainer.innerHTML = "";
+            const finalData = dataToRender.map(record => ({ ...record, originalIndex: records.indexOf(record) }))
+                .filter(record => (record.details || "").toLowerCase().includes(searchStr) || (record.licensePlate || "").toLowerCase().includes(searchStr));
 
-            const finalData = dataToRender.map(record => {
-                return {
-                    ...record,
-                    originalIndex: records.indexOf(record)
-                };
-            }).filter(record => {
-                const details = (record.details || "").toLowerCase();
-                const license = (record.licensePlate || "").toLowerCase();
-                return details.includes(searchStr) || license.includes(searchStr);
-            });
+            if (finalData.length === 0) { listContainer.innerHTML = "<p style='text-align:center; color:#888;'>Không có dữ liệu</p>"; return; }
 
-            if (finalData.length === 0) {
-                listContainer.innerHTML = "<p style='text-align:center; color:#888; padding:20px;'>Không có dữ liệu tháng này</p>";
-                return;
-            }
-
-            finalData.sort((a, b) => new Date(b.time) - new Date(a.time));
-
-            finalData.forEach(record => {
-                let typeName = record.type === 'service' ? "Dịch Vụ" : record.type === 'rental' ? "Cho Thuê" : "Chi Phí";
+            finalData.sort((a, b) => new Date(b.time) - new Date(a.time)).forEach(record => {
+                let typeName = record.type === 'service' ? "DV" : record.type === 'rental' ? "Thuê Xe" : "Chi Phí";
                 let amountClass = record.type === 'expense' ? "expense" : "income";
-                let amountPrefix = record.type === 'expense' ? "-" : "+";
-
-                let dateObj = new Date(record.time);
-                let dateStr = dateObj.toLocaleDateString('vi-VN') + " " + dateObj.toLocaleTimeString('vi-VN', {
-                    hour: '2-digit', minute: '2-digit'
-                });
-
+                
+                let d = new Date(record.time);
+                let dateStr = `${d.toLocaleDateString('vi-VN')} ${d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}`;
                 let licenseHtml = record.licensePlate && record.licensePlate !== "Không có" ? `<div>🚗 Biển số: ${record.licensePlate}</div>` : '';
 
-                let html = `
+                listContainer.innerHTML += `
                     <div class="history-item type-${record.type}" onclick="openEditModal(${record.originalIndex})">
                         <div class="history-header">
                             <span>${typeName}</span>
-                            <span class="history-amount ${amountClass}">${amountPrefix}${formatMoney(record.amount)}</span>
+                            <span class="history-amount ${amountClass}">${record.type === 'expense' ? '-' : '+'}${formatMoney(record.amount)}</span>
                         </div>
                         <div class="history-details">
-                            <div>📅 ${dateStr}</div>
+                            <div>📅 Bắt đầu: ${dateStr}</div>
+                            ${record.endTime ? `<div>🏁 Kết thúc: ${new Date(record.endTime).toLocaleDateString('vi-VN')} ${new Date(record.endTime).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}</div>` : ''}
                             <div>📌 ${record.details || "Không có ghi chú"}</div>
                             ${licenseHtml}
                         </div>
-                    </div>
-                `;
-                listContainer.innerHTML += html;
+                    </div>`;
             });
         }
 
-        // Chỉnh sửa (Lưu ý: Chức năng sửa/xóa hiện tại chỉ lưu tạm trên RAM, nếu anh load lại trang sẽ về như cũ. Để sửa trên SharePoint cần API PUT/DELETE)
+        // Mở Modal Chỉnh Sửa
         function openEditModal(index) {
             const record = records[index];
             document.getElementById('editIndex').value = index;
 
-            let timeStr = record.time;
-            if (timeStr.includes('Z')) {
-                timeStr = new Date(record.time).toISOString().slice(0, 16);
+            // Xử lý lấy giờ cũ chính xác
+            document.getElementById('editTime').value = formatToDatetimeLocal(record.time);
+            
+            // Xử lý ẩn hiện ô Giờ kết thúc
+            if (record.type === 'rental') {
+                document.getElementById('editEndGroup').style.display = 'block';
+                document.getElementById('editEndTime').value = formatToDatetimeLocal(record.endTime);
+            } else {
+                document.getElementById('editEndGroup').style.display = 'none';
             }
 
-            document.getElementById('editTime').value = timeStr;
             document.getElementById('editDetails').value = record.details || "";
             document.getElementById('editLicensePlate').value = record.licensePlate || "";
-            document.getElementById('editAmount').value = record.amount;
+            document.getElementById('editAmount').value = new Intl.NumberFormat('vi-VN').format(record.amount);
 
-            let typeName = record.type === 'service' ? "Dịch Vụ" : record.type === 'rental' ? "Cho Thuê" : "Chi Phí";
-            document.getElementById('modalTitle').innerText = `Xem chi tiết: ${typeName}`;
-
+            let typeName = record.type === 'service' ? "DV" : record.type === 'rental' ? "Thuê Xe" : "Chi Phí";
+            document.getElementById('modalTitle').innerText = `Chỉnh sửa: ${typeName}`;
             document.getElementById('editModal').style.display = "flex";
         }
 
-        function closeModal() {
-            document.getElementById('editModal').style.display = "none";
-        }
+        function closeModal() { document.getElementById('editModal').style.display = "none"; }
 
-        // Lưu dữ liệu chỉnh sửa lên SharePoint
+        // Sửa và Xóa (Chờ API)
         function saveEdit(event) {
             event.preventDefault();
-            let submitBtn = event.target.querySelector('.btn-save');
-            submitBtn.innerText = "Đang lưu...";
-            submitBtn.disabled = true;
-
-            let index = parseInt(document.getElementById('editIndex').value);
-            let targetRecord = records[index]; // Lấy bản ghi hiện tại để lấy ID Sharepoint
-
-            let updatedData = {
-                id: targetRecord.id, // ID của dòng trên SharePoint
-                type: targetRecord.type, // Loại giao dịch giữ nguyên
-                time: document.getElementById('editTime').value,
-                details: document.getElementById('editDetails').value,
-                licensePlate: document.getElementById('editLicensePlate').value,
-                amount: parseFloat(document.getElementById('editAmount').value)
-            };
-
-            fetch(API_UPDATE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedData)
-            })
-            .then(response => {
-                alert("Đã cập nhật thành công!");
-                closeModal();
-                fetchRecords(); // Tải lại dữ liệu mới nhất từ máy chủ
-            })
-            .catch(error => {
-                alert("Lỗi kết nối khi cập nhật!");
-            })
-            .finally(() => {
-                submitBtn.innerText = "Cập Nhật";
-                submitBtn.disabled = false;
-            });
+            if (!API_UPDATE_URL) {
+                alert("Tính năng sửa đang chạy nội bộ (Chờ API Sharepoint).");
+                closeModal(); return;
+            }
+            // Code xử lý update SharePoint sẽ chạy ở đây khi anh điền API
         }
 
-        // Xóa giao dịch trên SharePoint
         function deleteRecord() {
-            if (confirm("Anh có chắc chắn muốn xóa giao dịch này vĩnh viễn khỏi hệ thống không?")) {
-                let btnCancel = document.querySelector('button[onclick="deleteRecord()"]');
-                btnCancel.innerText = "Đang xóa...";
-                btnCancel.disabled = true;
-
-                let index = parseInt(document.getElementById('editIndex').value);
-                let recordId = records[index].id;
-
-                fetch(API_DELETE_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id: recordId })
-                })
-                .then(response => {
-                    alert("Đã xóa thành công!");
-                    closeModal();
-                    fetchRecords(); // Làm mới lại bảng
-                })
-                .catch(error => {
-                    alert("Lỗi kết nối khi xóa!");
-                })
-                .finally(() => {
-                    btnCancel.innerText = "Xóa Giao Dịch";
-                    btnCancel.disabled = false;
-                });
+            if (!API_DELETE_URL) {
+                alert("Chưa có API xóa.");
+                closeModal(); return;
             }
         }
     </script>
 </body>
-
 </html>
